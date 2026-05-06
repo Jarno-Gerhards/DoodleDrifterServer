@@ -18,6 +18,11 @@ const PORT = process.env.PORT || 8080;
 
 server.listen(PORT, () => {
   console.log("Server running on port", PORT);
+  ws.isAlive = true;
+
+    ws.on("pong", () => {
+        ws.isAlive = true;
+    });
 });
 
 // WebSocket logic
@@ -137,3 +142,17 @@ function broadcastToPlayers(msg) {
         ws.send(JSON.stringify(msg));
     });
 }
+
+setInterval(() => {
+    wss.clients.forEach((ws) => {
+
+        if (ws.isAlive === false) {
+            console.log("❌ Terminating dead connection");
+            return ws.terminate();
+        }
+
+        ws.isAlive = false;
+        ws.ping(); // triggers pong automatically on client
+    });
+
+}, 30000); // every 30 seconds
