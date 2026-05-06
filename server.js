@@ -18,17 +18,17 @@ const PORT = process.env.PORT || 8080;
 
 server.listen(PORT, () => {
   console.log("Server running on port", PORT);
-  ws.isAlive = true;
-
-    ws.on("pong", () => {
-        ws.isAlive = true;
-    });
+  
 });
 
 // WebSocket logic
 wss.on("connection", (ws) => {
   console.log("WebSocket CLIENT CONNECTED");
+ws.isAlive = true;
 
+    ws.on("pong", () => {
+        ws.isAlive = true;
+    });
   //console.log("RAW MESSAGE:", msg.toString());
 ws.on("message", (msg) => {
     console.log("RAW TYPE:", typeof msg);
