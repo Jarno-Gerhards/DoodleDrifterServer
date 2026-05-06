@@ -17,12 +17,12 @@ let players = {};
 const PORT = process.env.PORT || 8080;
 
 server.listen(PORT, () => {
-  console.log("🚀 Server running on port", PORT);
+  console.log("Server running on port", PORT);
 });
 
 // WebSocket logic
 wss.on("connection", (ws) => {
-  console.log("🔥 WebSocket CLIENT CONNECTED");
+  console.log("WebSocket CLIENT CONNECTED");
 
   //console.log("RAW MESSAGE:", msg.toString());
 ws.on("message", (msg) => {
@@ -34,7 +34,7 @@ ws.on("message", (msg) => {
         const parsed = JSON.parse(msg.toString());
         console.log("PARSED OK:", parsed);
     } catch (e) {
-        console.log("❌ JSON FAIL");
+        console.log("JSON FAIL");
     }
 });
   // ws.on("message", (msg) => {
@@ -120,4 +120,10 @@ function broadcast(msg) {
       p.send(JSON.stringify(msg));
     }
   });
+}
+
+function broadcastToPlayers(msg) {
+    Object.values(players).forEach(ws => {
+        ws.send(JSON.stringify(msg));
+    });
 }
