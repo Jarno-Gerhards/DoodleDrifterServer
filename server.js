@@ -1,14 +1,28 @@
+const express = require("express");
+const http = require("http");
 const WebSocket = require("ws");
 
-const port = process.env.PORT || 8080;
-const wss = new WebSocket.Server({ port });
+const app = express();
+
+// Create ONE server (this is what Railway exposes)
+const server = http.createServer(app);
+
+// Attach WebSocket to it
+const wss = new WebSocket.Server({ server });
 
 let host = null;
 let players = {};
 
-console.log("Server running on port", port);
+// Confirm server start
+const PORT = process.env.PORT || 8080;
 
+server.listen(PORT, () => {
+  console.log("🚀 Server running on port", PORT);
+});
+
+// WebSocket logic
 wss.on("connection", (ws) => {
+  console.log("🔥 WebSocket CLIENT CONNECTED");
 
   ws.on("message", (msg) => {
     let data;
@@ -31,6 +45,8 @@ wss.on("connection", (ws) => {
         players[id] = ws;
         ws.playerId = id;
 
+        console.log("Player joined:", id);
+
         if (host) {
           host.send(JSON.stringify({
             type: "PLAYER_JOINED",
@@ -41,6 +57,8 @@ wss.on("connection", (ws) => {
         break;
 
       case "SUBMIT_DRAWING":
+        console.log("Drawing received");
+
         if (host) {
           host.send(JSON.stringify({
             type: "DRAWING_SUBMITTED",
@@ -51,6 +69,8 @@ wss.on("connection", (ws) => {
         break;
 
       case "VOTE":
+        console.log("Vote received");
+
         if (host) {
           host.send(JSON.stringify({
             type: "VOTE_SUBMITTED",
@@ -71,6 +91,8 @@ wss.on("connection", (ws) => {
   });
 
   ws.on("close", () => {
+    console.log("Client disconnected");
+
     if (ws === host) {
       host = null;
       players = {};
@@ -81,6 +103,8 @@ wss.on("connection", (ws) => {
 
 function broadcast(msg) {
   Object.values(players).forEach(p => {
-    p.send(JSON.stringify(msg));
+    if (p.readyState === WebSocket.OPEN) {
+      p.send(JSON.stringify(msg));
+    }
   });
 }
