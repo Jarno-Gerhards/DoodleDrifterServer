@@ -24,6 +24,15 @@ server.listen(PORT, () => {
 // WebSocket logic
 wss.on("connection", (ws) => {
   console.log("WebSocket CLIENT CONNECTED");
+console.log("NEW CLIENT CONNECTED");
+
+    ws.on("close", () => {
+        console.log("❌ SERVER: client disconnected");
+    });
+
+    ws.on("error", (err) => {
+        console.log("❌ SERVER ERROR:", err.message);
+    });
 
 ws.isAlive = true;
     ws.missedBeats = 0;
