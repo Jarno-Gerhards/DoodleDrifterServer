@@ -42,6 +42,10 @@ ws.on("message", (msg) => {
         console.log("JSON FAIL");
     }
 });
+ws.on("pong", () => {
+    console.log("✔ pong received from client");
+    ws.isAlive = true;
+});
   ws.on("message", (msg) => {
     let data;
 
@@ -159,7 +163,3 @@ setInterval(() => {
 
 }, 30000); // every 30 seconds
 
-ws.on("pong", () => {
-    console.log("✔ pong received from client");
-    ws.isAlive = true;
-});
