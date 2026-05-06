@@ -37,71 +37,81 @@ ws.on("message", (msg) => {
         console.log("JSON FAIL");
     }
 });
-  // ws.on("message", (msg) => {
-  //   let data;
+  ws.on("message", (msg) => {
+    let data;
 
-  //   try {
-  //     data = JSON.parse(msg);
-  //   } catch {
-  //     return;
-  //   }
+    try {
+      data = JSON.parse(msg);
+    } catch {
+      return;
+    }
 
-  //   switch (data.type) {
+    switch (data.type) {
 
-  //     case "HOST_CONNECT":
-  //       host = ws;
-  //       console.log("Host connected");
-  //       break;
+      case "HOST_CONNECT":
+        host = ws;
+        console.log("Host connected");
+        break;
 
-  //     case "JOIN":
-  //       const id = "p" + Date.now();
-  //       players[id] = ws;
-  //       ws.playerId = id;
+      case "STATE":
+        console.log("Broadcasting state:", data.state);
 
-  //       console.log("Player joined:", id);
+        broadcastToPlayers({
+          type: "STATE",
+          state: data.state
+    });
+    break;
 
-  //       if (host) {
-  //         host.send(JSON.stringify({
-  //           type: "PLAYER_JOINED",
-  //           playerId: id,
-  //           name: data.name
-  //         }));
-  //       }
-  //       break;
+      case "JOIN":
+        const id = "p" + Date.now();
+        players[id] = ws;
+        ws.playerId = id;
+        ws.role = "player"
 
-  //     case "SUBMIT_DRAWING":
-  //       console.log("Drawing received");
+        console.log("Player joined:", id);
 
-  //       if (host) {
-  //         host.send(JSON.stringify({
-  //           type: "DRAWING_SUBMITTED",
-  //           playerId: ws.playerId,
-  //           image: data.image
-  //         }));
-  //       }
-  //       break;
+        if (host) {
+          host.send(JSON.stringify({
+            type: "PLAYER_JOINED",
+            playerId: id,
+            name: data.name
+          }));
+        }
+        break;
 
-  //     case "VOTE":
-  //       console.log("Vote received");
+      case "SUBMIT_DRAWING":
+        console.log("Drawing received");
 
-  //       if (host) {
-  //         host.send(JSON.stringify({
-  //           type: "VOTE_SUBMITTED",
-  //           playerId: ws.playerId,
-  //           targetId: data.drawingId
-  //         }));
-  //       }
-  //       break;
+        if (host) {
+          host.send(JSON.stringify({
+            type: "DRAWING_SUBMITTED",
+            playerId: ws.playerId,
+            image: data.image
+          }));
+        }
+        break;
 
-  //     case "START_DRAW":
-  //       broadcast({ type: "STATE", state: "DRAW" });
-  //       break;
+      case "VOTE":
+        console.log("Vote received");
 
-  //     case "START_VOTE":
-  //       broadcast({ type: "STATE", state: "VOTE" });
-  //       break;
-  //   }
-  // });
+        if (host) {
+          host.send(JSON.stringify({
+            type: "VOTE_SUBMITTED",
+            playerId: ws.playerId,
+            targetId: data.drawingId
+          }));
+        }
+        break;
+
+      case "START_DRAW":
+        broadcast({ type: "STATE", state: "DRAW" });
+        break;
+
+      case "START_VOTE":
+        broadcast({ type: "STATE", state: "VOTE" });
+        break;
+    }
+  });
 
   ws.on("close", () => {
     console.log("Client disconnected");
