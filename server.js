@@ -149,6 +149,8 @@ setInterval(() => {
         if (ws.isAlive === false) {
             console.log("❌ Terminating dead connection");
             return ws.terminate();
+  
+
         }
 
         ws.isAlive = false;
@@ -156,3 +158,8 @@ setInterval(() => {
     });
 
 }, 30000); // every 30 seconds
+
+ws.on("pong", () => {
+    console.log("✔ pong received from client");
+    ws.isAlive = true;
+});
