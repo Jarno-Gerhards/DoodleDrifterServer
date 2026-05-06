@@ -49,8 +49,7 @@ ws.on("message", (msg) => {
     }
 });
 
-});
-  ws.on("message", (msg) => {
+ws.on("message", (msg) => {
     let data;
 
     try {
@@ -136,7 +135,7 @@ ws.on("message", (msg) => {
     }
   });
 
-
+});
 function broadcast(msg) {
   Object.values(players).forEach(p => {
     if (p.readyState === WebSocket.OPEN) {
