@@ -149,26 +149,10 @@ function broadcastToPlayers(msg) {
 }
 
 setInterval(() => {
-    wss.clients.forEach((ws) => {
-
-        if (!ws.isAlive) {
-            ws.missedBeats += 1;
-            console.log("⚠ missed heartbeat", ws.missedBeats);
-
-            if (ws.missedBeats >= 2) {
-                console.log("❌ terminating client");
-                return ws.terminate();
-            }
+    wss.clients.forEach(ws => {
+        if (ws.readyState === 1) {
+            ws.send(JSON.stringify({ type: "KEEP_ALIVE" }));
         }
-
-        ws.isAlive = false;
-
-        try {
-            ws.ping();
-        } catch (e) {
-            console.log("Ping error:", e);
-        }
-
     });
-}, 30000);
+}, 25000);
 
