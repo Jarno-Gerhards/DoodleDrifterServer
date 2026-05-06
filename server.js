@@ -149,10 +149,14 @@ function broadcastToPlayers(msg) {
 }
 
 setInterval(() => {
-    wss.clients.forEach(ws => {
+    const msg = JSON.stringify({ type: "KEEP_ALIVE" });
+
+    wss.clients.forEach((ws) => {
         if (ws.readyState === 1) {
-            ws.send(JSON.stringify({ type: "KEEP_ALIVE" }));
+            ws.send(msg);
         }
     });
-}, 25000);
+
+    console.log("KEEP_ALIVE sent");
+}, 20000); // every 20s
 
