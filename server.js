@@ -22,9 +22,9 @@ server.listen(PORT, () => {
 
 // WebSocket logic
 wss.on("connection", (ws) => {
-  //console.log("🔥 WebSocket CLIENT CONNECTED");
+  console.log("🔥 WebSocket CLIENT CONNECTED");
 
-  console.log("RAW MESSAGE:", msg.toString());
+  //console.log("RAW MESSAGE:", msg.toString());
 
   ws.on("message", (msg) => {
     let data;
