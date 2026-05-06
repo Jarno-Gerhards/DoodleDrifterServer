@@ -34,13 +34,7 @@ console.log("NEW CLIENT CONNECTED");
         console.log("❌ SERVER ERROR:", err.message);
     });
 
-ws.isAlive = true;
-    ws.missedBeats = 0;
 
-    ws.on("pong", () => {
-        ws.isAlive = true;
-        ws.missedBeats = 0;
-        console.log("✔ pong received");
   //console.log("RAW MESSAGE:", msg.toString());
 ws.on("message", (msg) => {
     console.log("RAW TYPE:", typeof msg);
@@ -141,7 +135,7 @@ ws.on("message", (msg) => {
       console.log("Host disconnected, reset");
     }
   });
-});
+
 
 function broadcast(msg) {
   Object.values(players).forEach(p => {
