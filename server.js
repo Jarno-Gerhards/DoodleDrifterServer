@@ -101,7 +101,7 @@ ws.on("message", (msg) => {
   //       broadcast({ type: "STATE", state: "VOTE" });
   //       break;
   //   }
-  });
+  // });
 
   ws.on("close", () => {
     console.log("Client disconnected");
