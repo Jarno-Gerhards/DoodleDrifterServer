@@ -160,5 +160,5 @@ setInterval(() => {
     });
 
     console.log("KEEP_ALIVE sent");
-}, 20000); // every 20s
+}, 5000); // every 5s
 
