@@ -24,11 +24,14 @@ server.listen(PORT, () => {
 // WebSocket logic
 wss.on("connection", (ws) => {
   console.log("WebSocket CLIENT CONNECTED");
+
 ws.isAlive = true;
+    ws.missedBeats = 0;
 
     ws.on("pong", () => {
         ws.isAlive = true;
-    });
+        ws.missedBeats = 0;
+        console.log("✔ pong received");
   //console.log("RAW MESSAGE:", msg.toString());
 ws.on("message", (msg) => {
     console.log("RAW TYPE:", typeof msg);
@@ -42,9 +45,7 @@ ws.on("message", (msg) => {
         console.log("JSON FAIL");
     }
 });
-ws.on("pong", () => {
-    console.log("✔ pong received from client");
-    ws.isAlive = true;
+
 });
   ws.on("message", (msg) => {
     let data;
@@ -150,16 +151,24 @@ function broadcastToPlayers(msg) {
 setInterval(() => {
     wss.clients.forEach((ws) => {
 
-        if (ws.isAlive === false) {
-            console.log("❌ Terminating dead connection");
-            return ws.terminate();
-  
+        if (!ws.isAlive) {
+            ws.missedBeats += 1;
+            console.log("⚠ missed heartbeat", ws.missedBeats);
 
+            if (ws.missedBeats >= 2) {
+                console.log("❌ terminating client");
+                return ws.terminate();
+            }
         }
 
         ws.isAlive = false;
-        ws.ping(); // triggers pong automatically on client
-    });
 
-}, 30000); // every 30 seconds
+        try {
+            ws.ping();
+        } catch (e) {
+            console.log("Ping error:", e);
+        }
+
+    });
+}, 30000);
 
